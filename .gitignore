@@ -1,9 +1,5 @@
 # Environment
 .env
 
-# Data
-grafana/
-data/
-
 # IDE
 .vscode
