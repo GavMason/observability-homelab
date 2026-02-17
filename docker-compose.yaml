@@ -118,3 +118,57 @@ services:
       timeout: 10s
       retries: 3
       start_period: 30s
+
+  # Caddy (Reverse Proxy)
+  caddy:
+    image: caddy:latest
+    container_name: caddy
+    restart: unless-stopped
+    ports:
+      - "${CADDY_HTTP_PORT:-80}:80"
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./data/caddy:/data
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:80/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # Homepage (Dashboard)
+  homepage:
+    image: ghcr.io/gethomepage/homepage:latest
+    container_name: homepage
+    restart: unless-stopped
+    ports:
+      - "${HOMEPAGE_PORT:-3001}:3000"
+    volumes:
+      - ./homepage:/app/config
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      - HOMEPAGE_ALLOWED_HOSTS=${HOMEPAGE_ALLOWED_HOSTS:-homepage.homelab.local,homelab.local,localhost}
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # Uptime Kuma (Status Monitoring)
+  uptime-kuma:
+    image: louislam/uptime-kuma:1
+    container_name: uptime-kuma
+    restart: unless-stopped
+    ports:
+      - "${UPTIME_KUMA_PORT:-3002}:3001"
+    volumes:
+      - ./data/uptime-kuma:/app/data
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"const http = require('http'); const r = http.request({hostname:'localhost',port:3001,path:'/api/entry',timeout:2000}, res => process.exit(res.statusCode === 200 ? 0 : 1)); r.on('error', () => process.exit(1)); r.end();\""]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
