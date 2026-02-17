@@ -1,0 +1,60 @@
+---
+- Monitoring:
+    - Grafana:
+        icon: grafana.png
+        href: http://grafana.homelab.local/
+        description: Dashboards & Visualization
+        siteMonitor: http://grafana:3000/api/health
+        server: my-docker
+        container: grafana
+    - Prometheus:
+        icon: prometheus.png
+        href: http://prometheus.homelab.local/
+        description: Metrics Collection & Storage
+        siteMonitor: http://prometheus:9090/-/healthy
+        server: my-docker
+        container: prometheus
+    - Alertmanager:
+        icon: alertmanager.png
+        href: http://alertmanager.homelab.local/
+        description: Alert Routing & Notifications
+        siteMonitor: http://alertmanager:9093/-/healthy
+        server: my-docker
+        container: alertmanager
+
+- Infrastructure:
+    - cAdvisor:
+        icon: cadvisor.png
+        href: http://cadvisor.homelab.local/
+        description: Container Metrics
+        siteMonitor: http://cadvisor:8080/healthz
+        server: my-docker
+        container: cadvisor
+    - Uptime Kuma:
+        icon: uptime-kuma.png
+        href: http://uptime-kuma.homelab.local/
+        description: Uptime Monitoring & Status Pages
+        siteMonitor: http://uptime-kuma:3001
+        server: my-docker
+        container: uptime-kuma
+    - Portainer:
+        icon: portainer.png
+        href: http://portainer.homelab.local/
+        description: Container Management
+        siteMonitor: http://192.168.1.150:9000
+        server: my-docker
+        container: portainer
+
+- Networking:
+    - Caddy:
+        icon: caddy.png
+        href: http://homelab.local/
+        description: Reverse Proxy
+        server: my-docker
+        container: caddy
+    - Alertmanager Discord:
+        icon: discord.png
+        href: "#"
+        description: Discord Alert Bridge
+        server: my-docker
+        container: alertmanager-discord
