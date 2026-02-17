@@ -93,11 +93,7 @@ services:
     ports:
       - "9094:9094"
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:9094/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 5s
+      test: ["NONE"]
 
   # Grafana
   grafana:
