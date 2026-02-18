@@ -1,11 +1,11 @@
 #!/bin/bash
 # Homelab Observability Stack — Daily Backup
 # Backs up Grafana DB, Uptime Kuma DB, Prometheus data, and config files
-# Run via cron: 0 3 * * * /opt/observability/scripts/backup.sh
+# Run via cron: 0 3 * * * /opt/observability/scripts/backup.sh >> ~/backups/observability/backup.log 2>&1
 
 set -euo pipefail
 
-BACKUP_DIR="/opt/backups/observability"
+BACKUP_DIR="${HOME}/backups/observability"
 TIMESTAMP=$(date +%Y%m%d-%H%M%S)
 BACKUP_PATH="${BACKUP_DIR}/${TIMESTAMP}"
 COMPOSE_DIR="/opt/observability"
