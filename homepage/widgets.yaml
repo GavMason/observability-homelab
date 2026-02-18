@@ -1,10 +1,22 @@
 ---
+- search:
+    provider: google
+    target: _blank
+
 - resources:
     cpu: true
     memory: true
     disk: /
     label: System
     expanded: true
+
+- openmeteo:
+    label: Dallas
+    latitude: 32.78
+    longitude: -96.80
+    timezone: America/Chicago
+    units: imperial
+    cache: 5
 
 - datetime:
     text_size: l

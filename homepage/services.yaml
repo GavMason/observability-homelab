@@ -7,6 +7,12 @@
         siteMonitor: http://grafana:3000/api/health
         server: my-docker
         container: grafana
+        widget:
+          type: grafana
+          url: http://grafana:3000
+          username: "{{HOMEPAGE_VAR_GF_USER}}"
+          password: "{{HOMEPAGE_VAR_GF_PASS}}"
+          version: 2
     - Prometheus:
         icon: prometheus.png
         href: http://prometheus.homelab.internal/
@@ -14,6 +20,9 @@
         siteMonitor: http://prometheus:9090/-/healthy
         server: my-docker
         container: prometheus
+        widget:
+          type: prometheus
+          url: http://prometheus:9090
     - Alertmanager:
         icon: alertmanager.png
         href: http://alertmanager.homelab.internal/
@@ -30,6 +39,15 @@
         container: loki
 
 - Infrastructure:
+    - Caddy:
+        icon: caddy.png
+        href: http://homelab.internal/
+        description: Reverse Proxy
+        server: my-docker
+        container: caddy
+        widget:
+          type: caddy
+          url: http://caddy:2019
     - cAdvisor:
         icon: cadvisor.png
         href: http://cadvisor.homelab.internal/
@@ -40,7 +58,7 @@
     - Uptime Kuma:
         icon: uptime-kuma.png
         href: http://uptime-kuma.homelab.internal/
-        description: Uptime Monitoring & Status Pages
+        description: Uptime Monitoring
         siteMonitor: http://uptime-kuma:3001
         server: my-docker
         container: uptime-kuma
@@ -53,12 +71,6 @@
         container: portainer
 
 - Networking:
-    - Caddy:
-        icon: caddy.png
-        href: http://homelab.internal/
-        description: Reverse Proxy
-        server: my-docker
-        container: caddy
     - Alertmanager Discord:
         icon: discord.png
         href: "#"

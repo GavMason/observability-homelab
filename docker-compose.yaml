@@ -229,6 +229,8 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     environment:
       - HOMEPAGE_ALLOWED_HOSTS=${HOMEPAGE_ALLOWED_HOSTS:-homelab.internal,localhost}
+      - HOMEPAGE_VAR_GF_USER=${GF_USER:-admin}
+      - HOMEPAGE_VAR_GF_PASS=${GF_PASS}
     healthcheck:
       test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/"]
       interval: 30s
