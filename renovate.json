@@ -1,0 +1,31 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    "docker:enableMajor",
+    ":semanticCommits"
+  ],
+  "labels": ["dependencies"],
+  "schedule": ["before 6am on Monday"],
+  "timezone": "America/Chicago",
+  "packageRules": [
+    {
+      "description": "Group all Docker image updates together",
+      "matchDatasources": ["docker"],
+      "groupName": "docker images",
+      "groupSlug": "docker-images"
+    },
+    {
+      "description": "Auto-merge patch updates for Docker images",
+      "matchDatasources": ["docker"],
+      "matchUpdateTypes": ["patch"],
+      "automerge": true,
+      "automergeType": "pr"
+    },
+    {
+      "description": "Pin benjojo/alertmanager-discord to digest (no semver tags)",
+      "matchPackageNames": ["benjojo/alertmanager-discord"],
+      "pinDigests": true
+    }
+  ]
+}

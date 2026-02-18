@@ -41,6 +41,14 @@ http://cadvisor.homelab.internal {
 	reverse_proxy cadvisor:8080
 }
 
+# Loki — basic auth
+http://loki.homelab.internal {
+	basic_auth {
+		{$CADDY_BASIC_AUTH_USER:admin} {$CADDY_BASIC_AUTH_HASH}
+	}
+	reverse_proxy loki:3100
+}
+
 # Uptime Kuma
 http://uptime-kuma.homelab.internal {
 	reverse_proxy uptime-kuma:3001

@@ -21,6 +21,13 @@
         siteMonitor: http://alertmanager:9093/-/healthy
         server: my-docker
         container: alertmanager
+    - Loki:
+        icon: loki.png
+        href: http://grafana.homelab.internal/explore
+        description: Log Aggregation
+        siteMonitor: http://loki:3100/ready
+        server: my-docker
+        container: loki
 
 - Infrastructure:
     - cAdvisor:
@@ -58,3 +65,9 @@
         description: Discord Alert Bridge
         server: my-docker
         container: alertmanager-discord
+    - Promtail:
+        icon: loki.png
+        href: http://grafana.homelab.internal/explore
+        description: Log Collector
+        server: my-docker
+        container: promtail
