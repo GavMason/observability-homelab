@@ -19,11 +19,11 @@ scrape_configs:
 
   - job_name: 'node'
     static_configs:
-      - targets: ['localhost:9100']   # node-exporter (host network)
+      - targets: ['host.docker.internal:9100']   # node-exporter (host network)
 
   - job_name: 'cadvisor'
     static_configs:
-      - targets: ['localhost:8080']   # container metrics (Docker)
+      - targets: ['cadvisor:8080']   # container metrics (Docker)
 
   - job_name: 'alertmanager'
     static_configs:

@@ -6,6 +6,8 @@ services:
     restart: unless-stopped
     ports:
       - "${PROMETHEUS_PORT:-9191}:9090"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     volumes:
       - ./prometheus/prometheus.yaml:/etc/prometheus/prometheus.yaml:ro
       - ./prometheus/alerts:/etc/prometheus/alerts:ro
@@ -149,7 +151,7 @@ services:
       - ./homepage:/app/config
       - /var/run/docker.sock:/var/run/docker.sock:ro
     environment:
-      - HOMEPAGE_ALLOWED_HOSTS=${HOMEPAGE_ALLOWED_HOSTS:-homepage.homelab.local,homelab.local,localhost}
+      - HOMEPAGE_ALLOWED_HOSTS=${HOMEPAGE_ALLOWED_HOSTS:-homelab.internal,localhost}
     healthcheck:
       test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/"]
       interval: 30s
