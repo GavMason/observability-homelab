@@ -21,27 +21,34 @@ route:
   # Child routes
   routes:
     # Critical alerts get sent immediately
-    - match:
-        severity: critical
+    - matchers:
+        - severity="critical"
       receiver: 'discord-notifications'
       group_wait: 0s
       repeat_interval: 5m
 
     # Warning alerts are grouped more
-    - match:
-        severity: warning
+    - matchers:
+        - severity="warning"
       receiver: 'discord-notifications'
       group_wait: 30s
       repeat_interval: 1h
 
-# Inhibition rules - (prevent certain alerts when others are firing)
+# Inhibition rules — prevent certain alerts when others are firing
 inhibit_rules:
   # Inhibit warning if critical is firing for same alert
-  - source_match:
-      severity: 'critical'
-    target_match:
-      severity: 'warning'
+  - source_matchers:
+      - severity="critical"
+    target_matchers:
+      - severity="warning"
     equal: ['alertname', 'instance']
+
+  # Inhibit TargetDown if more specific down alert is already firing
+  - source_matchers:
+      - alertname=~"PrometheusDown|AlertmanagerDown|HostDown"
+    target_matchers:
+      - alertname="TargetDown"
+    equal: ['instance']
 
 # Receivers define how to send notifications
 receivers:

@@ -17,6 +17,7 @@ data/caddy/*
 !data/caddy/.gitkeep
 grafana/*
 !grafana/.gitkeep
+!grafana/provisioning
 
 # OS
 .DS_Store

@@ -82,18 +82,40 @@ groups:
           summary: "High disk I/O on {{ $labels.instance }}"
           description: "Disk I/O is high on device {{ $labels.device }} (current value: {{ $value | humanize }})"
 
+      # High network errors
+      - alert: HighNetworkErrors
+        expr: rate(node_network_receive_errs_total{device!~"lo|veth.*|docker.*|br-.*"}[5m]) + rate(node_network_transmit_errs_total{device!~"lo|veth.*|docker.*|br-.*"}[5m]) > 10
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High network errors on {{ $labels.instance }}"
+          description: "Network interface {{ $labels.device }} has error rate > 10/s (current: {{ $value | humanize }}/s)"
+
   - name: homelab_container_alerts
     interval: 30s
     rules:
-      # Container down
+      # Any container not running (detected via cAdvisor)
       - alert: ContainerDown
-        expr: up{job="cadvisor"} == 0
-        for: 1m
+        expr: |
+          absent_over_time(container_last_seen{name=~".+"}[5m])
+          and on(name) container_last_seen{name=~".+"}
+        for: 2m
         labels:
           severity: critical
         annotations:
-          summary: "cAdvisor on {{ $labels.instance }} is down"
-          description: "cAdvisor has been down for more than 1 minute - container monitoring unavailable."
+          summary: "Container {{ $labels.name }} is down"
+          description: "Container {{ $labels.name }} has not been seen for more than 5 minutes."
+
+      # Container restarting frequently
+      - alert: ContainerRestarting
+        expr: increase(container_restart_count{name!=""}[15m]) > 3
+        for: 0m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Container {{ $labels.name }} is restarting frequently"
+          description: "Container {{ $labels.name }} restarted {{ $value }} times in the last 15 minutes."
 
       # High container CPU usage
       - alert: ContainerHighCPU
@@ -105,19 +127,29 @@ groups:
           summary: "High CPU usage in container {{ $labels.name }}"
           description: "Container {{ $labels.name }} CPU usage is above 80% (current: {{ $value | humanize }}%)"
 
-      # High container memory usage
+      # High container memory usage (absolute — 512MB per container)
       - alert: ContainerHighMemory
-        expr: (container_memory_usage_bytes{name!=""} / container_spec_memory_limit_bytes{name!=""}) * 100 > 80
+        expr: container_memory_usage_bytes{name!=""} > 512 * 1024 * 1024
         for: 5m
         labels:
           severity: warning
         annotations:
           summary: "High memory usage in container {{ $labels.name }}"
-          description: "Container {{ $labels.name }} memory usage is above 80% (current: {{ $value | humanize }}%)"
+          description: "Container {{ $labels.name }} is using {{ $value | humanize }} of memory."
 
-  - name: homelab_monitoring_alerts
+  - name: homelab_service_alerts
     interval: 30s
     rules:
+      # Catch-all: any scrape target down
+      - alert: TargetDown
+        expr: up == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Target {{ $labels.job }}/{{ $labels.instance }} is down"
+          description: "Scrape target {{ $labels.instance }} (job: {{ $labels.job }}) has been down for more than 2 minutes."
+
       # Prometheus down
       - alert: PrometheusDown
         expr: up{job="prometheus"} == 0
@@ -136,7 +168,7 @@ groups:
           severity: critical
         annotations:
           summary: "Alertmanager is down"
-          description: "Alertmanager has been down for more than 1 minute - alerts will not be sent."
+          description: "Alertmanager has been down for more than 1 minute — alerts will not be sent."
 
       # Too many failed scrapes
       - alert: PrometheusTooManyFailedScrapes
@@ -156,4 +188,4 @@ groups:
           severity: warning
         annotations:
           summary: "Prometheus TSDB compactions are failing"
-          description: "Prometheus TSDB compactions have failed - this may lead to increased storage usage."
+          description: "Prometheus TSDB compactions have failed — this may lead to increased storage usage."
