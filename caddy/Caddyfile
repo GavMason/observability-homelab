@@ -7,41 +7,37 @@
 	}
 }
 
-# Homepage Dashboard (default landing page)
-http://homelab.local {
-	reverse_proxy homepage:3000
-}
-
-http://homepage.homelab.local {
+# Homepage Dashboard
+http://homelab.internal {
 	reverse_proxy homepage:3000
 }
 
 # Grafana
-http://grafana.homelab.local {
+http://grafana.homelab.internal {
 	reverse_proxy grafana:3000
 }
 
 # Prometheus
-http://prometheus.homelab.local {
+http://prometheus.homelab.internal {
 	reverse_proxy prometheus:9090
 }
 
 # Alertmanager
-http://alertmanager.homelab.local {
+http://alertmanager.homelab.internal {
 	reverse_proxy alertmanager:9093
 }
 
 # cAdvisor
-http://cadvisor.homelab.local {
+http://cadvisor.homelab.internal {
 	reverse_proxy cadvisor:8080
 }
 
 # Uptime Kuma
-http://uptime-kuma.homelab.local {
+http://uptime-kuma.homelab.internal {
 	reverse_proxy uptime-kuma:3001
 }
 
 # Portainer
-http://portainer.homelab.local {
+http://portainer.homelab.internal {
 	reverse_proxy host.docker.internal:9000
 }
