@@ -13,6 +13,7 @@
           username: "{{HOMEPAGE_VAR_GF_USER}}"
           password: "{{HOMEPAGE_VAR_GF_PASS}}"
           version: 2
+          fields: ["dashboards", "alertstriggered"]
     - Prometheus:
         icon: prometheus.png
         href: http://prometheus.homelab.internal/
