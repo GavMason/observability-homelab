@@ -1,18 +1,25 @@
 ---
-title: Homelab Dashboard
+title: Homelab
 theme: dark
 color: slate
 
 headerStyle: clean
 statusStyle: dot
+hideVersion: true
 
 layout:
   Monitoring:
     style: row
     columns: 3
+    header: true
+    icon: mdi-chart-line
   Infrastructure:
     style: row
     columns: 3
+    header: true
+    icon: mdi-server
   Networking:
     style: row
     columns: 2
+    header: true
+    icon: mdi-network

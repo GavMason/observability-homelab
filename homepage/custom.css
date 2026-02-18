@@ -1,0 +1,217 @@
+/* ========================================
+   Space Aurora — Homelab Dashboard
+   Starfield + nebula blobs + glass cards
+   ======================================== */
+
+/* ---- Animated nebula blobs ---- */
+@keyframes nebula1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25%      { transform: translate(100px, -80px) scale(1.15); }
+  50%      { transform: translate(-50px, 50px) scale(0.9); }
+  75%      { transform: translate(70px, 30px) scale(1.08); }
+}
+
+@keyframes nebula2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25%      { transform: translate(-70px, 60px) scale(1.1); }
+  50%      { transform: translate(60px, -40px) scale(1.15); }
+  75%      { transform: translate(-40px, -50px) scale(0.92); }
+}
+
+@keyframes nebula3 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%      { transform: translate(50px, 70px) scale(1.12); }
+  66%      { transform: translate(-60px, -30px) scale(0.88); }
+}
+
+/* ---- Deep space background (stars via custom.js canvas) ---- */
+#page_container {
+  background: #030614 !important;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Nebula blobs — purple/blue/cyan */
+body::before,
+body::after {
+  content: '';
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(130px);
+  opacity: 0.3;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Purple nebula — top left */
+body::before {
+  width: 650px;
+  height: 650px;
+  top: -150px;
+  left: -100px;
+  background: radial-gradient(circle, #7c3aed 0%, #4338ca 35%, transparent 70%);
+  animation: nebula1 24s ease-in-out infinite;
+}
+
+/* Cyan nebula — bottom right */
+body::after {
+  width: 550px;
+  height: 550px;
+  bottom: -80px;
+  right: -80px;
+  background: radial-gradient(circle, #0ea5e9 0%, #0369a1 35%, transparent 70%);
+  animation: nebula2 20s ease-in-out infinite;
+}
+
+/* Deep violet nebula — center */
+#page_container::before {
+  content: '';
+  position: fixed;
+  width: 500px;
+  height: 500px;
+  top: 35%;
+  left: 45%;
+  border-radius: 50%;
+  background: radial-gradient(circle, #6d28d9 0%, #4c1d95 35%, transparent 70%);
+  filter: blur(130px);
+  opacity: 0.18;
+  z-index: 0;
+  pointer-events: none;
+  animation: nebula3 26s ease-in-out infinite;
+}
+
+/* Content above blobs */
+#page_container > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ---- SPACING & LAYOUT ---- */
+
+/* Top widget bar — breathing room */
+#widgets-wrap {
+  padding: 24px 0 16px 0 !important;
+  margin-bottom: 8px !important;
+}
+
+/* Space between section groups */
+.services-group {
+  margin-bottom: 28px !important;
+}
+
+/* Section headers — more padding */
+.services-group > div:first-child {
+  margin-bottom: 14px !important;
+  padding-left: 4px !important;
+}
+
+/* Card grid gaps */
+.services-group ul {
+  gap: 16px !important;
+}
+
+/* Card inner padding */
+.service > div {
+  padding: 14px 16px !important;
+}
+
+/* ---- FROSTED GLASS CARDS ---- */
+.service {
+  backdrop-filter: blur(20px) saturate(170%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(170%) !important;
+  background: rgba(8, 10, 28, 0.75) !important;
+  border: 1px solid rgba(139, 92, 246, 0.18) !important;
+  border-radius: 14px !important;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+}
+
+.service:hover {
+  background: rgba(12, 15, 38, 0.85) !important;
+  border-color: rgba(139, 92, 246, 0.4) !important;
+  transform: translateY(-3px) !important;
+  box-shadow:
+    0 16px 48px rgba(0, 0, 0, 0.5),
+    0 0 30px rgba(139, 92, 246, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07) !important;
+}
+
+/* Icon glow on hover */
+.service:hover img {
+  filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.5));
+  transition: filter 0.3s ease;
+}
+
+/* ---- WIDGET CONTAINERS ---- */
+
+/* System resources — glass card */
+.information-widget-resources {
+  backdrop-filter: blur(20px) saturate(170%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(170%) !important;
+  background: rgba(8, 10, 28, 0.7) !important;
+  border: 1px solid rgba(56, 189, 248, 0.15) !important;
+  border-radius: 14px !important;
+  padding: 4px 8px !important;
+}
+
+/* Datetime — clean, no box */
+.information-widget-datetime {
+  background: transparent !important;
+  border: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
+}
+
+/* ---- TEXT CONTRAST ---- */
+
+/* Service titles — bright white */
+.service-title {
+  color: rgba(255, 255, 255, 0.95) !important;
+}
+
+/* Service descriptions — softer but readable */
+.service-description {
+  color: rgba(200, 210, 230, 0.7) !important;
+}
+
+/* ---- SECTION HEADERS ---- */
+.text-theme-800 {
+  text-transform: uppercase !important;
+  letter-spacing: 0.14em !important;
+  font-size: 0.7rem !important;
+  opacity: 0.55;
+  font-weight: 500 !important;
+}
+
+/* ---- STATUS DOTS WITH GLOW ---- */
+.w-2.h-2 {
+  box-shadow: 0 0 6px currentColor, 0 0 14px currentColor;
+}
+
+/* ---- STAGGERED FADE-IN ---- */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.service {
+  animation: fadeIn 0.6s ease both;
+}
+
+.service:nth-child(1) { animation-delay: 0.05s; }
+.service:nth-child(2) { animation-delay: 0.1s; }
+.service:nth-child(3) { animation-delay: 0.15s; }
+.service:nth-child(4) { animation-delay: 0.2s; }
+.service:nth-child(5) { animation-delay: 0.25s; }
+.service:nth-child(6) { animation-delay: 0.3s; }
+.service:nth-child(7) { animation-delay: 0.35s; }
+.service:nth-child(8) { animation-delay: 0.4s; }
+
+/* ---- THIN SCROLLBAR ---- */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(139, 92, 246, 0.2); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(139, 92, 246, 0.4); }

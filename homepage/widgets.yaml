@@ -4,12 +4,11 @@
     memory: true
     disk: /
     label: System
+    expanded: true
+
 - datetime:
-    text_size: xl
+    text_size: l
     format:
       dateStyle: long
       timeStyle: short
       hourCycle: h23
-- search:
-    provider: google
-    target: _blank
