@@ -1,6 +1,6 @@
 #!/bin/bash
 # Homelab Observability Stack — Daily Backup
-# Backs up Grafana DB, Uptime Kuma DB, Prometheus data, and config files
+# Backs up Grafana DB, Uptime Kuma DB, Alertmanager data, and config files
 # Run via cron: 0 3 * * * /opt/observability/scripts/backup.sh >> ~/backups/observability/backup.log 2>&1
 
 set -euo pipefail
@@ -16,22 +16,27 @@ mkdir -p "${BACKUP_PATH}"
 
 echo "[$(date)] Starting backup to ${BACKUP_PATH}"
 
-# 1. Grafana SQLite DB (copy while running — SQLite handles this safely)
-if [ -f "${COMPOSE_DIR}/grafana/grafana.db" ]; then
-    cp "${COMPOSE_DIR}/grafana/grafana.db" "${BACKUP_PATH}/grafana.db"
+# 1. Grafana SQLite DB (use docker cp — file is owned by UID 472)
+if docker cp grafana:/var/lib/grafana/grafana.db "${BACKUP_PATH}/grafana.db" 2>/dev/null; then
     echo "  ✓ Grafana DB"
+else
+    echo "  ⚠ Grafana DB skipped (container not running?)"
 fi
 
-# 2. Uptime Kuma SQLite DB
-if [ -f "${COMPOSE_DIR}/data/uptime-kuma/kuma.db" ]; then
-    cp "${COMPOSE_DIR}/data/uptime-kuma/kuma.db" "${BACKUP_PATH}/kuma.db"
+# 2. Uptime Kuma SQLite DB (use docker cp — file is owned by root)
+if docker cp uptime-kuma:/app/data/kuma.db "${BACKUP_PATH}/kuma.db" 2>/dev/null; then
     echo "  ✓ Uptime Kuma DB"
+else
+    echo "  ⚠ Uptime Kuma DB skipped (container not running?)"
 fi
 
-# 3. Alertmanager data
-if [ -d "${COMPOSE_DIR}/data/alertmanager" ]; then
-    tar -czf "${BACKUP_PATH}/alertmanager-data.tar.gz" -C "${COMPOSE_DIR}/data" alertmanager/ 2>/dev/null || true
+# 3. Alertmanager data (use docker cp)
+if docker cp alertmanager:/alertmanager "${BACKUP_PATH}/alertmanager-data" 2>/dev/null; then
+    tar -czf "${BACKUP_PATH}/alertmanager-data.tar.gz" -C "${BACKUP_PATH}" alertmanager-data/ 2>/dev/null
+    rm -rf "${BACKUP_PATH}/alertmanager-data"
     echo "  ✓ Alertmanager data"
+else
+    echo "  ⚠ Alertmanager data skipped"
 fi
 
 # 4. All config files (everything tracked in git + .env)
@@ -50,23 +55,11 @@ tar -czf "${BACKUP_PATH}/config.tar.gz" \
     2>/dev/null || true
 echo "  ✓ Config files"
 
-# 5. Prometheus snapshot via API (non-disruptive)
-SNAPSHOT_RESULT=$(curl -s -XPOST "http://localhost:9191/api/v1/admin/tsdb/snapshot" 2>/dev/null || echo '{"status":"error"}')
-if echo "${SNAPSHOT_RESULT}" | grep -q '"success"'; then
-    SNAP_NAME=$(echo "${SNAPSHOT_RESULT}" | grep -o '"name":"[^"]*"' | cut -d'"' -f4)
-    if [ -n "${SNAP_NAME}" ]; then
-        mv "${COMPOSE_DIR}/data/prometheus/snapshots/${SNAP_NAME}" "${BACKUP_PATH}/prometheus-snapshot" 2>/dev/null || true
-        echo "  ✓ Prometheus snapshot"
-    fi
-else
-    echo "  ⚠ Prometheus snapshot skipped (API not available)"
-fi
-
-# 6. Calculate backup size
+# 5. Calculate backup size
 BACKUP_SIZE=$(du -sh "${BACKUP_PATH}" | cut -f1)
 echo "  Backup size: ${BACKUP_SIZE}"
 
-# 7. Clean up old backups (keep last N days)
+# 6. Clean up old backups (keep last N days)
 find "${BACKUP_DIR}" -maxdepth 1 -type d -mtime +${RETENTION_DAYS} -not -path "${BACKUP_DIR}" -exec rm -rf {} \;
 REMAINING=$(find "${BACKUP_DIR}" -maxdepth 1 -type d -not -path "${BACKUP_DIR}" | wc -l)
 echo "  Retained backups: ${REMAINING}"
