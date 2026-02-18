@@ -4,6 +4,9 @@
 # IDE
 .vscode/
 
+# Dev/scratch
+dev/
+
 # Runtime data
 data/prometheus/*
 !data/prometheus/.gitkeep
