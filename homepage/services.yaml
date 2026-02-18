@@ -70,6 +70,13 @@
         siteMonitor: http://192.168.1.150:9000
         server: my-docker
         container: portainer
+    - Code Server:
+        icon: code-server.png
+        href: http://code.homelab.internal/
+        description: VS Code in the Browser
+        siteMonitor: http://code-server:8443/healthz
+        server: my-docker
+        container: code-server
 
 - Networking:
     - Alertmanager Discord:

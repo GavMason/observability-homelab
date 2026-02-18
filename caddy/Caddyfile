@@ -58,3 +58,8 @@ http://uptime-kuma.homelab.internal {
 http://portainer.homelab.internal {
 	reverse_proxy host.docker.internal:9000
 }
+
+# Code Server
+http://code.homelab.internal {
+	reverse_proxy code-server:8443
+}
