@@ -1,0 +1,55 @@
+global:
+  resolve_timeout: 5m
+
+# Route tree for organizing alerts
+route:
+  # Default receiver for all alerts
+  receiver: 'discord-notifications'
+
+  # Group alerts by labels
+  group_by: ['alertname', 'cluster', 'service']
+
+  # Wait time before sending initial notification
+  group_wait: 10s
+
+  # Wait time before sending notification about new alerts in group
+  group_interval: 10s
+
+  # Wait time before re-sending notification
+  repeat_interval: 12h
+
+  # Child routes
+  routes:
+    # Critical alerts get sent immediately
+    - match:
+        severity: critical
+      receiver: 'discord-notifications'
+      group_wait: 0s
+      repeat_interval: 5m
+
+    # Warning alerts are grouped more
+    - match:
+        severity: warning
+      receiver: 'discord-notifications'
+      group_wait: 30s
+      repeat_interval: 1h
+
+# Inhibition rules - (prevent certain alerts when others are firing)
+inhibit_rules:
+  # Inhibit warning if critical is firing for same alert
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'warning'
+    equal: ['alertname', 'instance']
+
+# Receivers define how to send notifications
+receivers:
+  - name: 'discord-notifications'
+    webhook_configs:
+      # Send to alertmanager-discord bridge
+      - url: 'http://alertmanager-discord:9094'
+        send_resolved: true
+
+  # Null receiver for alerts to silence
+  - name: 'null'

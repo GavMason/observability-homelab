@@ -1,9 +1,23 @@
 # Environment
 .env
 
-# Data
-grafana/
-data/
-
 # IDE
-.vscode
+.vscode/
+
+# Runtime data
+data/prometheus/*
+!data/prometheus/.gitkeep
+data/alertmanager/
+data/uptime-kuma/*
+!data/uptime-kuma/.gitkeep
+data/caddy/*
+!data/caddy/.gitkeep
+grafana/*
+!grafana/.gitkeep
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
